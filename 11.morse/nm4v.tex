@@ -1,0 +1,854 @@
+\documentclass{article}
+
+%\usepackage{showframe}
+\usepackage[english]{babel}
+\usepackage{xcolor}
+\usepackage
+    [ colorlinks=true
+    , filecolor={blue!50!black}
+    , urlcolor={blue!50!black}
+    , citecolor={blue!50!black}
+    , linkcolor=blue
+    ]{hyperref}
+\usepackage
+    [ a4paper
+    , top=2cm
+    , bottom=2cm
+    , left=3cm
+    , right=3cm
+    , marginparwidth=1.75cm
+    ]{geometry}
+
+\usepackage{parskip}
+%\setlength{\parskip}{1em}
+%\setlength{\parindent}{0pt}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+
+\usepackage{nicematrix}
+\NiceMatrixOptions{cell-space-limits = 3pt}
+
+\usepackage{csquotes}
+\usepackage
+    [ backend=biber
+    , sorting=ynt
+    , style=alphabetic
+    ]{biblatex}
+\addbibresource{nm4v.citations.bib}
+
+\newcommand{\fref}[2]{\href{#1}{\tt #2}}
+\newcommand{\mli}[1]{\mathit{#1}}
+\newcommand\mdoubleplus{\ensuremath{\mathbin{+\mkern-10mu+}}}
+
+\DeclareMathOperator\erf{erf}
+\DeclareMathOperator\Var{Var}
+\DeclareMathOperator\Med{Med}
+\DeclareMathOperator\MAD{MAD}
+
+\title{Mean, Median, Variance, and MAD of Normal Mixtures}
+\author{Yclept Nemo}
+
+
+\begin{document}
+%\the\abovedisplayskip{}
+%\setlength{\abovedisplayskip}{10pt plus 2.0pt minus 5.0pt}
+
+\maketitle
+
+\begin{abstract}\noindent
+Given a mixture of normal variables derive the mean, median, variance, and median absolute deviation (MAD) of the mixture in terms of the component mean and variance.
+\end{abstract}
+
+\section{Mean and Variance}
+
+Let $X$ be the random variable of a mixture of $n$ random variables with weights $p_1, \ldots, p_n$ such that $\sum_i p_i = 1$. Given the PDF $f_i$ of each component random variable where $f_i$ represents any distribution, the PDF of the mixture is defined as:
+%
+\begin{equation}\label{Mixture PDF}
+f_X(x) = \sum_i p_i f_i(x)
+\end{equation}
+
+Mean is the first raw moment (i.e., moment about zero) and variance the second central moment (i.e., moment about the mean). Let $\mu^{(n')}$ be the $n^{th}$ raw moment of $f_X(x)$, and $\mu^{(n')}_i$ be the $n^{th}$ raw moment of $f_i(x)$. We use the definition of moment to define $\mu^{(n')}$ in terms of each component $\mu^{(n')}_i$:
+%
+\begin{equation}\label{Mixture Raw Moments}
+\begin{split}
+\mu^{(n')} = E[X^n] &= \int_{-\infty}^{\infty} x^n f_X(x) \,dx \\
+& = \int_{-\infty}^{\infty} x^n \sum_i p_i f_i(x) \,dx \\
+& = \sum_i p_i \int_{-\infty}^{\infty} x^n f_i(x) \,dx \\
+& = \sum_i p_i \mu^{(n')}_i
+\end{split}
+\end{equation}
+
+Therefore mean is simply the weighted sum of the component means. Mean is often notated as $\mu$ rather than $\mu^{(1')}$, and both are equivalent:
+%
+\begin{equation}\label{Mixture Mean}
+\begin{split}
+\mu^{(1')} &= E[X] =
+    \sum_i p_i \mu^{(1')}_i \\
+\mu &= E[X] =
+    \sum_i p_i \mu_i 
+\end{split}
+\end{equation}
+
+The second central moment $\mu^{(2)}$ about $c$ is related to the second raw moment $\mu^{(2')}$ for any random variable $X$ with a PDF $f_X(x)$ as follows:
+%
+\begin{align}
+\begin{split}\label{Central to Raw 2-Moment about C}
+\hskip 1cm
+\mu^{(2)} & = \int_{-\infty}^{\infty} (x-c)^2 f_X(x) \,dx \\
+& = \int_{-\infty}^{\infty} x^2 f_X(x) \,dx
+    - 2c \int_{-\infty}^{\infty} x f_X(x) \,dx
+    + c^2 \int_{-\infty}^{\infty} f_X(x) \,dx \\
+& \overset{1}{=}
+    \int_{-\infty}^{\infty} x^2 f_X(x) \,dx
+    - 2c \int_{-\infty}^{\infty} x f_X(x) \,dx
+    + c^2 \\
+& \overset{2}{=}
+    \mu^{(2')}
+    - 2c \mu^{(1')}
+    + c^2
+\end{split}
+\intertext{\indent When $c = \mu^{(1')}$:}
+\begin{split}\label{Central to Raw 2-Moment about Mean}
+\Var(X) & =
+    \mu^{(2')}
+    - 2 \mu^{(1')} \mu^{(1')}
+    + \left( \mu^{(1')} \right)^2 \\
+& =
+    \mu^{(2')}
+    - \left( \mu^{(1')} \right)^2
+\end{split}
+\intertext{\indent Where:}
+\begin{split}
+& \overset{1}{=}\ \text{The integral of a PDF is 1} \\
+& \overset{2}{=}\ \text{Substituting the raw first and second moments} \\
+\end{split} \notag
+\end{align}
+
+Variance can also be defined and expanded in terms of a random variable. This process can be generalized to derive the Law of Total Cumulance. For whichever method is used the results are equivalent.
+%
+\begin{equation}\label{Central to Raw 2-Moment about Mean as RV}
+\begin{split}
+\Var(X) &= E[(X - E[X])^2] \\
+& = E[X^2 - 2XE[X] + E[X]^2] \\
+& = E[X^2] - 2E[X]E[X] + E[X]^2 \\
+& = E[X^2] - E[X]^2 \\
+\end{split}
+\end{equation}
+
+The variance of the mixture $X$ can be related to the raw first and second moments of its components by substituting \ref{Central to Raw 2-Moment about Mean} with \ref{Mixture Raw Moments}:
+%
+\begin{equation}\label{Mixture Raw 2-Moment}
+\begin{split}
+\Var(X) & = \mu^{(2')} - \left( \mu^{(1')} \right)^2 \\
+& = \sum_i p_i \mu^{(2')}_i - \left( \sum_i p_i \mu^{(1')}_i \right)^2
+\end{split}
+\end{equation}
+
+From \ref{Central to Raw 2-Moment about Mean} we know $\mu^{(2')} = \mu^{(2)} + \left( \mu^{(1')} \right)^2$ for any PDF. This allows the variance of the mixture $X$ to be related to the central second moment:
+%
+\begin{equation}\label{Mixture Variance}
+\begin{split}
+\Var(X) & = \sum_i p_i \mu^{(2')}_i
+    - \left( \sum_i p_i \mu^{(1')}_i \right)^2 \\
+& = \sum_i p_i \left( \mu^{(2)}_i + \left( \mu^{(1')}_i \right)^2 \right)
+    - \left( \sum_i p_i \mu^{(1')}_i \right)^2 \\
+& = \sum_i p_i \mu^{(2)}_i
+    + \sum_i p_i \left( \mu^{(1')}_i \right)^2
+    - \left( \sum_i p_i \mu^{(1')}_i \right)^2
+\end{split}
+\end{equation}
+
+Which can be rewritten using the more common terminology for variance $\sigma_i^2 = \mu^{(2)}_i$ and mean $\mu_i = \mu^{(1')}_i$:
+%
+\begin{equation}\label{Mixture Variance Common}
+\begin{split}
+\Var(X) & = \sum_i p_i \sigma_i^2
+    + \sum_i p_i \mu_i^2
+    - \left( \sum_i p_i \mu_i \right)^2
+\end{split}
+\end{equation}
+
+\section{Median and MAD}
+
+We have now derived the mean and variance for a mixture of any distributions and turn to the median and MAD. These two statistics are nonlinear and cannot be discussed without also defining the distribution. A distribution with a mean $\mu$ and variance $\sigma^2$ may have any median and MAD. If the distribution is normal then $\Med(X) = \mu$ and $\MAD(X) = \sigma\sqrt{2}\erf^{-1}(1/2)$, because the normal distribution is symmetric. We will only derive the median and MAD for a mixture of normal distributions. These statistics do not have a convenient closed-form solution but can be solved numerically as demonstrated.
+
+As intuition consider a mixture of two non-overlapping normal distributions $N_1$ and $N_2$ such that $\mu_1 < \mu_2$, $p_1 = 0.7$, and $p_2 = 0.3$. Visualize the mean of the mixture when shifting the center of either distribution and notice it follows the weighted sum of the component means as in \ref{Mixture Mean}. Arithmetically this equates to the finding the mean of a list by first subdividing and finding the mean of each sub-list. Now decrease or increase the variance of either distribution and notice the mean remains unaffected. Because the normal distribution is symmetric, for each component shifted towards the mean there exists a single component shifted away from the mean by an equal amount, and thus on balance the sums are negated and the mean remains unaffected. This demonstrates that the mixture mean depends only on the component means.
+
+As the distributions are moved apart the variance increases. Increase a component variance and the mixture variance also increases. The mixture is not symmetric about its mean so when squared further distances are given more weight. And so the variance can be viewed as the dispersion of the means plus a mixture of variances.
+
+The median can be attributed to a point from a single distribution given solely by the component weights. As long as the distributions do not overlap and order is preserved the median follows that point as both mean and variance fluctuate. This shows that the median depends on both mean and variance; given the above conditions exclusively on the mean and variance of a single distribution.
+
+The MAD is the (sorted) median of the absolute distance from the median. As such it depends on the mean and variance of the intervening distributions.
+
+There is not a 1:1 correspondence between median and MAD, and mean and variance. Mixtures with the differing mean and variance may share the same median and MAD. Mixtures with differing median and MAD may share the same mean and variance. This is not unexpected considering how median and MAD are robust against outliers. As seen below, this means that systems of relations between these statistics may have multiple solutions.
+
+The CDF $F_X$ of the random variable $X$ is defined as the integral of the corresponding PDF $f_X$ over $[-\infty,x]$. By substituting the mixture PDF from \ref{Mixture PDF} with component PDFs $f_i$ of any distribution, the resulting CDF of the mixture is shown to be the weighted sum of the component CDFs $F_i$ of any distribution:
+%
+\begin{equation}\label{Mixture CDF}
+\begin{split}
+F_X(x) & = \int_{-\infty}^{x} f_X(t) \,dt \\
+& = \int_{-\infty}^{x} \sum_i p_i f_i(t) \,dt \\
+& = \sum_i p_i \int_{-\infty}^{x} f_i(t) \,dt \\
+& = \sum_i p_i F_i(x)
+\end{split}
+\end{equation}
+
+The CDF of the normal distribution is:
+%
+\begin{equation}\label{Normal CDF}
+F_i(x) =  \frac{1}{2}
+    \left[ 1 + \erf \left( \frac{x - \mu_i}{\sigma_i\sqrt{2}} \right)\right]
+\end{equation}
+
+When each component of the mixture is normally distributed the resulting CDF becomes:
+%
+\begin{equation}\label{Normal Mixture CDF}
+F_X(x) =  \frac{1}{2} \sum_i p_i
+    \left[ 1 + \erf \left( \frac{x - \mu_i}{\sigma_i\sqrt{2}} \right)\right]
+\end{equation}
+
+For any distribution $X$ where $F_X^{-1}$ is the inverse CDF, the median is by definition:
+%
+\begin{equation}\label{Median Definition}
+\Med(X) = F_X^{-1} \left( \frac{1}{2} \right)
+\end{equation}
+
+In other words the median is the point $x$ at which the CDF is $\frac{1}{2}$; the point at which $P(X \leq x) = P(X \geq x) = \frac{1}{2}$. Since the inverse of a normal mixture $X$ does not have a closed-form expression, we instead express its median as the solution in $x$ to:
+%
+\begin{align}
+\begin{split}\label{Normal Mixture Median}
+\frac{1}{2} & = \frac{1}{2} \sum_i p_i
+    \left[ 1 + \erf \left( \frac{x - \mu_i}{\sigma_i\sqrt{2}} \right)\right] \\
+1 & = \sum_i p_i
+    \left[ 1 + \erf \left( \frac{x - \mu_i}{\sigma_i\sqrt{2}} \right)\right] \\
+1 & = \sum_i p_i +
+    \sum_i p_i \erf \left( \frac{x - \mu_i}{\sigma_i\sqrt{2}} \right) \\
+1 & \overset{1}{=} 1 +
+    \sum_i p_i \erf \left( \frac{x - \mu_i}{\sigma_i\sqrt{2}} \right) \\
+0 & = \sum_i p_i \erf \left( \frac{x - \mu_i}{\sigma_i\sqrt{2}} \right)
+\end{split}
+\intertext{\indent Where:}
+& \overset{1}{=}\ \text{By definition (\ref{Mixture PDF}), } \sum_i p_i = 1 \notag
+\end{align}
+
+The function $\erf(x)$ is a strictly increasing function with a range of $(-1,1)$. Given the general form $a\cdot\erf(bx+c)$, $a$ is the vertical scale factor, $b$ the horizontal scale factor and $c$ the horizontal shift. A positive $c$ results in a left shift; a negative $c$ results in a right shift. A positive $b$ results in a strictly increasing function; a negative $b$ results in a strictly decreasing function. The resulting range is $(-a,a)$. As a sum of strictly increasing functions is itself strictly increasing we see that there is only one solution to \ref{Normal Mixture Median}, the median of $X$. This is good, as there can only be a single median.
+
+Given any distribution $X$ with median $\Med(X)$, define a new distribution representing the absolute deviation from the median:
+%
+\begin{equation}\label{MAD Distribution}
+Y = \lvert X - \Med(X) \rvert
+\end{equation}
+
+Then by definition the median absolute deviation is the median of $Y$:
+%
+\begin{equation}\label{MAD Definition}
+\begin{split}
+\MAD(X) &= \Med \left( \lvert X - \Med(x) \rvert \right) \\
+& = \Med(Y) \\
+& = F_Y^{-1}\left(\frac{1}{2}\right)
+\end{split}
+\end{equation}
+
+When $X$ is a normal mixture the inverse function $F_Y^{-1}$ will not have a closed expression. But first we must derive the CDF $F_Y$ and the PDF $f_Y$ of the distribution $Y$. Let $X$ be any distribution. Given a point $m$ let $Y = \lvert X - m \rvert$, where $m$ represents $\Med(X)$. The CDF of $Y$ can be found as follows:
+%
+\begin{align}
+\begin{split}\label{AD CDF}
+\hskip 1cm
+F_Y(y) &= P(Y \leq y) \\
+& = P(\lvert X - m \rvert \leq y) \\
+& \overset{1}{=} P(-y \leq X - m \leq y) \\
+& = P(m - y \leq X \leq y + m) \\
+& \overset{2}{=} F_X(y+m) - F_X(m-y)
+\end{split}
+\intertext{\indent Where:}
+\begin{split}
+& \overset{1}{=}\ \text{Expanding the cases of the absolute value} \\
+& \overset{2}{=}\ \text{By definition of the CDF} \\
+\end{split} \notag
+\end{align}
+
+For the PDF $f_Y$ take the derivative of the CDF $F_Y$. Remember that $F_X$ is a definite integral of $f_X$ and use the fundamental theorem of calculus and the chain rule to find: 
+%
+\begin{equation}\label{AD PDF by CDF}
+\begin{split}
+f_Y(y) &= F_Y'(y) \\
+& = 1 \cdot f_X(y+m) - (-1) \cdot f_X(m-y) \\
+& = f_X(y+m) + f_X(m-y)
+\end{split}
+\end{equation}
+
+We can verify this using the change-of-variable technique for the case of a two-to-one function such as $Y = |X - m|$. Let $Y = g(X)$ be a continuous two-to-one function which can be split into two invertible functions $X_1 = g_1^{-1}(Y)$ and $X_2 = g_2^{-1}(Y)$. The PDF of $Y$ is related to the PDF of $X$ as:
+%
+\begin{equation}\label{CoV Definition}
+f_Y(y) = f_X \left( g_1^{-1}(y) \right)
+    \cdot \left| \frac{d}{dy} g_1^{-1}(y) \right|
+    + f_X \left( g_2^{-1}(y) \right)
+    \cdot \left| \frac{d}{dy} g_2^{-1}(y) \right| \\
+\end{equation}
+
+Let's split our two-to-one function into two invertible functions:
+%
+\begin{equation}\label{Y Piecewise}
+\begin{split}
+Y &= \lvert X - m \rvert \\
+& = \begin{cases}
+    X - m, & X \geq m \\
+    m - X, & X \leq m \\ 
+    \end{cases}
+\end{split}
+\end{equation}
+
+The inverse of $Y$ can be found by solving each piecewise equation and substituting the bounds:
+%
+\begin{equation}\label{Inverse Y Piecewise}
+X = \begin{cases}
+    Y + m, & X \geq m \quad\land\quad Y \geq 0 \\
+    m - Y, & X \leq m \quad\land\quad Y \geq 0 \\ 
+    \end{cases}
+\end{equation}
+
+By applying the change-of-variable technique we derive the same PDF:
+%
+\begin{equation}\label{AD PDF by CoV}
+\begin{split}
+f_Y(y) &= f_X \left( g_1^{-1}(y) \right)
+    \cdot \left| \frac{d}{dy} g_1^{-1}(y) \right|
+    + f_X \left( g_2^{-1}(y) \right)
+    \cdot \left| \frac{d}{dy} g_2^{-1}(y) \right| \\
+& = f_X(y + m) \cdot \left| \frac{d}{dy} (y+m) \right|
+    + f_X(m - y) \cdot \left| \frac{d}{dy} (m - y) \right| \\
+& = f_X(y + m) \cdot \lvert 1 \rvert
+    + f_X(m - y) \cdot \lvert -1 \rvert \\
+& = f_X(y+m) + f_X(m-y)
+\end{split}
+\end{equation}
+
+It is important to note the domain of $Y$ found via substitution (\ref{Inverse Y Piecewise}). Even though the domain of the resulting PDF $f_Y$ and CDF $F_Y$ may differ, the supported domain of these functions is at most the domain $Y$. This is termed the \emph{support} of the distribution; for $Y$ it is $[0,\infty]$. As an example, let $X$ be the normal distribution $X \sim N(\mu, \sigma^2)$ and $m$ be the median of $X$, $m = \mu$. The PDF $f_X$ is by definition:
+%
+\begin{equation}\label{Normal PDF}
+f_X(x) = \frac{1}{\sigma \sqrt{2 \pi}}
+    e^{-\frac{1}{2} \left( \frac{x - \mu}{\sigma} \right)^2}
+\end{equation}
+
+By substituting $f_X$ using \ref{AD PDF by CoV} or \ref{AD PDF by CDF} the PDF $f_Y$ of $Y$ is:
+%
+\begin{equation}\label{PDF of Half-Normal}
+\begin{split}
+f_Y(y) &= f_X(y+m) + f_X(m-y)
+    , \quad y \geq 0 \\
+&=  \frac{1}{\sigma \sqrt{2 \pi}}
+    e^{-\frac{1}{2} \left( \frac{y + m - \mu}{\sigma} \right)^2}
+    + \frac{1}{\sigma \sqrt{2 \pi}}
+    e^{-\frac{1}{2} \left( \frac{m - y - \mu}{\sigma} \right)^2} \\
+&=  \frac{1}{\sigma \sqrt{2 \pi}} \left(
+    e^{-\frac{1}{2} \left( \frac{y}{\sigma} \right)^2} +
+    e^{-\frac{1}{2} \left( \frac{- y}{\sigma} \right)^2}
+    \right) \\
+&=  \frac{1}{\sigma \sqrt{2 \pi}}
+    2e^{-\frac{1}{2} \left( \frac{y^2}{\sigma^2} \right)} \\
+&=  \frac{2}{\sigma \sqrt{2 \pi}}
+    e^{-\frac{1}{2} \left( \frac{y^2}{\sigma^2} \right)}
+    , \quad y \geq 0
+\end{split}
+\end{equation}
+
+This is the well-known \emph{half-normal} distribution. Although the domain of $f_Y$ is $[-\infty,\infty]$, the support of $f_Y$ is $[0,\infty]$. The CDF $F_Y$ of this half-normal distribution is found by substituting the CDF $F_X$ of the normal distribution (\ref{Normal CDF}) using \ref{AD CDF}. The CDF $F_Y$ has the same support, $[0,\infty]$. Because $\erf$ is an odd function, that is:
+%
+\begin{equation}\label{ERF Odd}
+-\erf(x) = \erf(-x)
+\end{equation}
+
+The CDF $F_Y$ can be simplified further:
+%
+\begin{equation}\label{CDF of Half-Normal}
+\begin{split}
+F_Y(y) &= F_X(y+m) - F_X(m-y)
+    , \quad y \geq 0 \\
+&=  \frac{1}{2} \left[ 1 + \erf
+    \left( \frac{y + m - \mu}{\sigma\sqrt{2}} \right) \right]
+-   \frac{1}{2}  \left[ 1 + \erf
+    \left( \frac{m - y - \mu}{\sigma\sqrt{2}} \right) \right] \\
+&=  \frac{1}{2} \erf \left( \frac{y}{\sigma\sqrt{2}} \right)
+-   \frac{1}{2} \erf \left( \frac{-y}{\sigma\sqrt{2}} \right) \\
+&=  \erf \left( \frac{y}{\sigma\sqrt{2}} \right)
+,   \quad y \geq 0 \\
+\end{split}
+\end{equation}
+
+The median of $Y$ given a normal $X$ is known to be $\sigma\sqrt{2}\erf^{-1}(1/2)$, by \ref{MAD Definition} this is also the MAD of $X$. Let's see if we are in agreement:
+%
+\begin{equation}\label{Median of Half-Normal}
+\begin{split}
+\frac{1}{2}
+&= \erf \left( \frac{y}{\sigma\sqrt{2}} \right)
+,   \quad y \geq 0 \\
+    \frac{y}{\sigma\sqrt{2}}
+&=  \erf^{-1} \left( \frac{1}{2} \right)
+,   \quad y \geq 0 \\
+    y
+&=  \sigma \sqrt{2} \erf^{-1} \left( \frac{1}{2} \right)
+,   \quad y \geq 0 \\
+\end{split}
+\end{equation}
+
+Now let $X$ be a mixture of normal distributions while $Y$ remains unchanged. That is, let $Y = \lvert X - m \rvert$ where $m$ is a point representing $\Med(X)$. Given the PDF of a normal distribution in \ref{Normal PDF}, by substitution with \ref{Mixture PDF} the PDF of the normal mixture $X$ is:
+%
+\begin{equation}\label{Normal Mixture PDF}
+f_X(x) = \sum_i p_i \frac{1}{\sigma_i\sqrt{2\pi}}
+    e^{-\frac{1}{2} \left( \frac{x - \mu_i}{\sigma_i} \right)}
+\end{equation}
+
+Therefore the PDF $f_Y$ of $Y$ is:
+%
+\begin{equation}\label{AD PDF of Normal Mixture}
+\begin{split}
+f_Y(y) &= f_X(y+m) + f_X(m-y)
+    , \quad y \geq 0 \\
+&=  \sum_i p_i \frac{1}{\sigma_i\sqrt{2\pi}}
+    e^{-\frac{1}{2} \left( \frac{y + m - \mu_i}{\sigma_i} \right)}
++   \sum_i p_i \frac{1}{\sigma_i\sqrt{2\pi}}
+    e^{-\frac{1}{2} \left( \frac{m - y - \mu_i}{\sigma_i} \right)} \\
+&=  \sum_i p_i \frac{1}{\sigma_i\sqrt{2\pi}} \left[
+    e^{-\frac{1}{2} \left( \frac{y + m - \mu_i}{\sigma_i} \right)}
++   e^{-\frac{1}{2} \left( \frac{m - y - \mu_i}{\sigma_i} \right)}
+    \right]
+,   \quad y \geq 0 \\
+\end{split}
+\end{equation}
+
+And given the CDF of the normal mixture $X$ in \ref{Normal Mixture CDF}, the CDF $F_Y$ of $Y$ is:
+%
+\begin{equation}\label{AD CDF of Normal Mixture}
+\begin{split}
+F_Y(y) &= F_X(y+m) - F_X(m-y)
+    , \quad y \geq 0 \\
+&=  \frac{1}{2} \sum_i p_i
+    \left[ 1 + \erf \left( \frac{y + m - \mu_i}{\sigma_i\sqrt{2}} \right)\right]
+-   \frac{1}{2} \sum_i p_i
+    \left[ 1 + \erf \left( \frac{m - y - \mu_i}{\sigma_i\sqrt{2}} \right)\right] \\
+&=  \frac{1}{2} \sum_i p_i
++   \frac{1}{2} \sum_i p_i
+    \erf \left( \frac{y + m - \mu_i}{\sigma_i\sqrt{2}} \right) \\
+&   \qquad - \frac{1}{2} \sum_i p_i
+-   \frac{1}{2} \sum_i p_i
+    \erf \left( \frac{m - y - \mu_i}{\sigma_i\sqrt{2}} \right) \\
+&=  \frac{1}{2} \sum_i p_i
+    \erf \left( \frac{y + m - \mu_i}{\sigma_i\sqrt{2}} \right)
+-   \frac{1}{2} \sum_i p_i
+    \erf \left( \frac{m - y - \mu_i}{\sigma_i\sqrt{2}} \right) \\
+&=  \frac{1}{2} \sum_i \left[
+    p_i \erf \left( \frac{y + m - \mu_i}{\sigma_i\sqrt{2}} \right)
+-   p_i \erf \left( \frac{-y + m - \mu_i}{\sigma_i\sqrt{2}} \right)
+    \right]
+,   \quad y \geq 0 \\
+\end{split}
+\end{equation}
+
+When $m = \Med(X)$ it follows from \ref{MAD Definition} that the median absolute deviation of $X$ is the median of $Y$, since $Y$ describes the absolute deviation of $X$ from $m$. The inverse function $F_Y^{-1}$ has no closed-form solution and therefore both $\MAD(X)$ and $\Med(Y)$ are the solution in $y$ to:
+%
+\begin{align}
+\begin{split}\label{Normal Mixture MAD}
+\frac{1}{2} &= \frac{1}{2} \sum_i \left[
+    p_i \erf \left( \frac{y + m - \mu_i}{\sigma_i\sqrt{2}} \right)
+-   p_i \erf \left( \frac{-y + m - \mu_i}{\sigma_i\sqrt{2}} \right)
+    \right]
+,   \quad y \geq 0 \\
+\frac{1}{2} &\overset{1}{=} \frac{1}{2} \sum_i \left[
+    p_i \erf \left( \frac{y + (m - \mu_i)}{\sigma_i\sqrt{2}} \right)
++   p_i \erf \left( \frac{y - (m - \mu_i)}{\sigma_i\sqrt{2}} \right)
+    \right]
+,   \quad y \geq 0 \\
+1 &= \sum_i \left[
+    p_i \erf \left( \frac{y + (m - \mu_i)}{\sigma_i\sqrt{2}} \right)
++   p_i \erf \left( \frac{y- (m - \mu_i)}{\sigma_i\sqrt{2}} \right)
+    \right]
+,   \quad y \geq 0
+\end{split}
+\intertext{\indent Where:}
+\begin{split}
+& \overset{1}{=}\ \text{Because $\erf$ is an odd function, see \ref{ERF Odd}} \\
+\end{split} \notag
+\end{align}
+
+Let us examine the shape of the graph of the right-hand side. Since a sum of strictly increasing functions is itself strictly increasing, there is only one solution. Since $\erf$ is an odd function, $\erf(x) + \erf(-x) = 0$. Therefore every component has the point $(0,0)$ and so does the resulting sum. Every component is the sum of two $\erf$ functions each representing the $\pm$ distance from the component mean to the median, ensuring the resulting function is also odd. A positive distance results in the characteristic $\erf$ bump in $\mathbb{R}_{<0}$ due to the left shift; the second function ensures the bump is mirrored to $\mathbb{R}_{>0}$. The sum of two $\erf$ functions doubles the range from $(-1,1)$ to $(-2,2)$; the $1/2$ compensates for that. In fact for $y \geq 0$ this function can be approximated as:
+%
+\begin{equation}\label{Normal Mixture MAD Approximation}
+F_{Y_a}(y) \approx \frac{1}{2} \sum_i \left[ p_i \erf
+    \left( \frac{y - \lvert m - \mu_i \rvert)}{\sigma_i\sqrt{2}} \right)
+    + 1 \right]
+,   \quad y \geq 0
+\end{equation}
+
+The error in this approximation is:
+%
+\begin{equation}\label{Normal Mixture MAD Approximation Error}
+\begin{split}
+\varepsilon &= F_Y - F_{Y_a}
+,   \quad y \geq 0 \\
+& = \frac{1}{2} \sum_i \left[
+    p_i \erf \left( \frac{y + (m - \mu_i)}{\sigma_i\sqrt{2}} \right)
++   p_i \erf \left( \frac{y - (m - \mu_i)}{\sigma_i\sqrt{2}} \right)
+    \right] \\
+&   \qquad - \frac{1}{2} \sum_i \left[ p_i \erf
+    \left( \frac{y - \lvert m - \mu_i \rvert)}{\sigma_i\sqrt{2}} \right)
+    + 1 \right] \\
+& = \frac{1}{2} \sum_i \left[
+    p_i \erf \left( \frac{y + \lvert m - \mu_i \rvert)}{\sigma_i\sqrt{2}} \right)
++   p_i \erf \left( \frac{y - \lvert m - \mu_i \rvert)}{\sigma_i\sqrt{2}} \right)
+    \right. \\
+&   \left. \qquad -
+    p_i \erf \left( \frac{y - \lvert m - \mu_i \rvert)}{\sigma_i\sqrt{2}} \right)
+    - 1 \right] \\
+& = \frac{1}{2} \sum_i \left[
+    p_i \erf \left( \frac{y + \lvert m - \mu_i \rvert)}{\sigma_i\sqrt{2}} \right)
+    - 1 \right]
+,   \quad y \geq 0
+\end{split}
+\end{equation}
+%
+Which for $y \geq 0 $, is near the asymptote and very small.
+
+Now to solve for $\Med(X)$ (\ref{Normal Mixture Median}) or $\MAD(X)$ (\ref{Normal Mixture MAD}), assuming all other parameters are known and the index of summation $i$ is bounded, replace each $\erf$ with its Taylor series expansion to the $n$th order term. Expand the expression, collect like terms, and apply series reversion using the standard reversion solution coefficients. Apply a change of variables if there is a constant term $a_0 \neq 0$ because standard series reversion requires $a_0 = 0$. This generates an approximate solution which can be refined using first-order Newton's method. The mean $\mu$ can be used as the initial point for Taylor expansion.
+
+However we are interested in the case where the median and MAD are known, as well as the relationship between parameter sequences $\mu_i, \sigma_i$ such as: $\mu_2 = 2\mu_1, \mu_3 = 3\mu_1, \ldots$ This leaves two non-linear equations of two unknowns.
+
+\subsection{The Shape of the Graphs}
+
+Consider the median of a normal mixture in \ref{Normal Mixture Median} as the solution $F_x(\mu, \sigma;\ x) = 0$ to the following equation in two variables $\mu$ and $\sigma$ where $x$ (median) is a constant. The function represents a 3-dimensional surface; the solution will be a level curve.
+%
+\begin{equation}\label{Normal Mixture Median Function}
+F_x(\mu, \sigma;\ x) = \sum_i p_i \erf \left( \frac
+    {x - f_{\mu_i}(\mu, \ldots)}
+    {f_{\sigma_i}(\sigma, \ldots)\sqrt{2}} \right)
+\end{equation}
+
+The simplest component functions are:
+%
+\begin{equation}\label{Normal Mixture Median Component Functions}
+\begin{split}
+f_{\mu_i}(\mu, \ldots) = \mu_i \\
+f_{\sigma_i}(\sigma, \ldots) = \sigma_i
+\end{split}
+\end{equation}
+
+There must however be some restrictions. By definition variance must not be negative and for simplicity assume that all component functions are increasing. What is the shape of the level curve?
+
+Now consider the MAD of a normal mixture in \ref{Normal Mixture MAD} as the solution $F_y(\mu, \sigma;\ x,y) = 0$ to the following equation in two variables $\mu$ and $\sigma$ where $x$ (median) and $y$ (MAD) are both constant. Once again the function represents a 3-dimensional surface; the solution will be a level curve. With the same component functions and restrictions as the previous function, what is the shape of the level curve?
+%
+\begin{equation}\label{Normal Mixture MAD Function}
+\begin{split}
+F_y(\mu, \sigma;\ x, y) = -1 +
+&   \sum_i p_i \erf \left( \frac
+        {y + x - f_{\mu_i}(\mu, \ldots)}
+        {f_{\sigma_i}(\sigma, \ldots)\sqrt{2}}
+    \right) \\
+    -
+&   \sum_i p_i \erf \left( \frac
+        {-y + x - f_{\mu_i}(\mu, \ldots)}
+        {f_{\sigma_i}(\sigma, \ldots)\sqrt{2}}
+    \right)
+,   \quad y \geq 0
+\end{split}
+\end{equation}
+
+The shape of the level curves $F_x = 0$ and $F_y = 0$ can be derived from the partial derivatives of the corresponding surfaces using the implicit function theorem. For example let $\sigma = f_{x_i}(\mu)$ be the set of functions between the critical points in $F_x$ along $\sigma$. Then the derivative of each $f_{x_i}$ is given as:
+%
+\begin{equation}\label{Implicit Function Theorem Example}
+\begin{split}
+f_{x_i}'(\mu) = \cfrac
+    {\hfill- \cfrac{dF_x}{d\mu}}
+    {\hfill\cfrac{dF_x}{d\sigma}}
+    ,\qquad \frac{dF_x}{d\sigma} \neq 0
+\end{split}
+\end{equation}
+
+As a system two equations the median and MAD provide a constraint to the mean and variance of the mixture. By analysing the shape of the graph we can hope to determine the number of solutions to this system.
+%
+\begin{equation}\label{Median & MAD Constraint to Mean & Variance}
+\begin{cases}
+    F_x(\mu, \sigma;\ x) = 0 \\
+    F_y(\mu, \sigma;\ x,y) = 0
+\end{cases}
+\end{equation}
+
+Analysis of the level curves in this fashion quickly becomes piecewise very complicated even when restricted to the limited range of the $\erf$ function. Therefore no further work was done in this direction.
+
+\subsection{A Numerical Example}
+
+Morse code symbols must be one of three durations. Density plots of human Morse code demonstrate that each duration can be represented as a roughly normal random variable. Therefore Morse code duration can be modeled as a mixture $X$ of three normals $X_1$, $X_2$, and $X_3$. Interestingly the standard deviation of each component is logarithmically proportional to its mean duration, suggesting a Weber-Fechner relation. This opens the possibility that Morse code duration instead follows a log-normal mixture. This is unlikely for two reasons. The Weber-Fechner law suggests that actual outputs are logarithmically proportional to intended outputs and unrelated to deviations. Finally, log-normal distributions feature a positive skew which is not present in the data. Our intent is to build a robust model of Morse code duration using median and MAD, exploiting existing constraints to match the number of unknowns and equations. By providing the median and MAD - statistics less sensitive to outliers - we can solve the system numerically for the expected mean and standard deviation.
+
+The means of each component are specified by the Morse code standard.
+%
+\begin{equation}\label{Morse Code Mean Component Functions}
+\begin{split}
+\mu_1 &= \mu_1 \\
+\mu_2 &= 3 \mu_1 \\
+\mu_3 &= 7 \mu_1
+\end{split}
+\end{equation}
+
+The weights of each component can be derived by frequency analysis of Morse code symbols for the English language. See \fref{run:./morse\_data.py} {morse\_data.py:time\_frequencies} for more information.
+%
+\begin{equation}\label{Morse Code Weights}
+\begin{split}
+p_1 = 0.5988 \\
+p_2 = 0.3598 \\
+p_3 = 0.0413
+\end{split}
+\end{equation}
+
+In the space of linear-mean to logarithmic-deviation the relation between component mean and standard deviation is linear. While a line has two unknowns, to avoid an underdetermined system we require no more than one unknown. Expecting the y-intercept to be a physiological constant I undertook an overview of research into tempo regulation and finger-tapping. \textcite{hammerschmidt_spontaneous_2021} found the standard deviation of spontaneous motor tempo (SMT) for the majority of natural inter-tap intervals ($< 1300$ ms) to be relatively constant, averaging 72 ms with 3.8 ms standard deviation. This is consistent with the y-intercept of my data at 79 ms and if accurate would result in the following relation. Note that the point $(0, b)$ represents a fixed standard deviation common to all components while the slope $a$ represents the relative differences in standard deviations between components.
+%
+\begin{align}
+\begin{split}\label{Morse Code Mean-Deviation Y-Intercept Function}
+\ln \sigma &= a \mu + b_l \\
+\sigma &= e^{a \mu + b_l} \\
+\sigma &= e^{a \mu} e^{b_l} \\
+\sigma &= b e^{a \mu}
+\end{split}
+\intertext{\indent Where:}
+\begin{split}
+b_l &= \ln b \\
+b &\approx 72
+\end{split} \notag
+\end{align}
+
+The study of tempo regulation has several competing theories each modeling different fundamental timing mechanisms which remain poorly understood \cite{little_regulating_2000}. There are many degrees of freedom in the human sensorimotor system allowing Morse code tappers to exhibit a wide variety of behaviors \cite{newell_variability_1993}. Most theories predict either a linear standard deviation or a linear variance \cite{rosenbaum_timing_1998} which contradicts my logarithmic standard deviation. Even then it might be premature to assume that SMT standard deviation should represent the minimum (y-intercept) standard deviation. Instead of selecting the y-intercept from existing literature we select a point $p^{(1)} = (\mu^{(1)}, \sigma^{(1)})$ from our existing data. This is possible because the components do not overlap and accurate because the weight $p_1$ represents the majority of the data.
+
+We can truncate a sample $s$ of $X$ with $|s|$ data points to a sample of $X_1$ using the weight $p_1$.
+%
+\begin{equation}\label{Morse Code Sample Point 1 Data}
+\begin{split}
+i &= \lceil p_1 |s| \rceil \\
+s^{(1)} &= \left[ s_{(1)},\ \ldots,\ s_{(i)} \right]
+\end{split}
+\end{equation}
+
+The truncated sample $s^{(1)}$ undoubtedly contains outliers from other components. Because $X_1$ is normal the median and MAD can be used as an estimate of mean and standard deviation.
+%
+\begin{align}\label{Morse Code Sample Point Estimation}
+\mu^{(1)} &= \Med(s^{(1)}) \\
+\sigma^{(1)} &= \frac{\MAD(s^{(1)})}{\sqrt{2}\erf^{-1}(1/2)}
+\end{align}
+
+Now the function of mean to standard deviation in point-slope form.
+%
+\begin{align}
+\begin{split}\label{Morse Code Mean-Deviation Point-Slope Function}
+\ln \sigma &= a (\mu -\mu^{(1)}) + \sigma^{(1)}_l \\
+\sigma &= e^{a (\mu - \mu^{(1)}) + \sigma^{(1)}_l} \\
+\sigma &= e^{a (\mu - \mu^{(1)})} e^{\sigma^{(1)}_l} \\
+\sigma &= e^{a (\mu - \mu^{(1)})} \sigma^{(1)}
+\end{split}
+\intertext{\indent Where:}
+\begin{split}
+\sigma^{(1)}_l &= \ln \sigma^{(1)}
+\end{split} \notag
+\end{align}
+
+There are now sufficient constraints to specialize the normal mixture median function $F_x$ in \ref{Normal Mixture Median Function} for Morse code. For $f_{\sigma_i}$ we use the mapping $\mu \mapsto \sigma$ from \ref{Morse Code Mean-Deviation Y-Intercept Function} which assumes the y-intercept is a physiological constant. We then substitute the relations given in \ref{Morse Code Mean Component Functions} for $f_{\mu_i}$ and all instances of mean.
+%
+\begin{equation}\label{Morse Code Mixture Median Function Y-Intercept}
+\begin{split}
+F_{\mli{med}}(\mu_1, a) =
+&   + p_1 \erf \left( \frac{\mli{med} - \mu_1}{b e^{a\mu_1} \sqrt{2}} \right) \\
+&   + p_2 \erf \left( \frac{\mli{med} - 3\mu_1}{b e^{3a\mu_1} \sqrt{2}} \right) \\
+&   + p_3 \erf \left( \frac{\mli{med} - 7\mu_1}{b e^{7a\mu_1} \sqrt{2}} \right)
+\end{split}
+\end{equation}
+
+This form uses the alternative mapping $\mu \mapsto \sigma$ from \ref{Morse Code Mean-Deviation Point-Slope Function} in point-slope form which is derived from an existing sample. 
+%
+\begin{equation}\label{Morse Code Mixture Median Function Point-Slope}
+\begin{split}
+F_{\mli{med}}(\mu_1, a) =
+&   + p_1 \erf \left( \frac{\mli{med} - \mu_1}
+        {\sigma^{(1)} e^{a (\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right) \\
+&   + p_2 \erf \left( \frac{\mli{med} - 3\mu_1}
+        {\sigma^{(1)} e^{a (3\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right) \\
+&   + p_3 \erf \left( \frac{\mli{med} - 7\mu_1}
+        {\sigma^{(1)} e^{a (7\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right)
+\end{split}
+\end{equation}
+
+We similarly specialize the normal mixture MAD function $F_y$ in \ref{Normal Mixture MAD Function} for Morse code. As with $F_{\mli{med}}$ in \ref{Morse Code Mixture Median Function Y-Intercept} this form uses the mapping $\mu \mapsto \sigma$ from \ref{Morse Code Mean-Deviation Y-Intercept Function} (y-intercept).
+%
+\begin{equation}\label{Morse Code Mixture MAD Function Y-Intercept}
+\begin{split}
+F_{\mli{mad}}(\mu_1, a) = -1
+&   + p_1 \erf \left( \frac{\mli{mad} + (\mli{med} - \mu_1)}
+        {b e^{a\mu_1} \sqrt{2}}
+        \right)
+    + p_1 \erf \left( \frac{\mli{mad} - (\mli{med} - \mu_1)}
+        {b e^{a\mu_1} \sqrt{2}}
+        \right) \\
+&   + p_2 \erf \left( \frac{\mli{mad} + (\mli{med} - 3\mu_1)}
+        {b e^{3a\mu_1} \sqrt{2}}
+        \right)
+    + p_2 \erf \left( \frac{\mli{mad} - (\mli{med} - 3\mu_1)}
+        {b e^{3a\mu_1} \sqrt{2}}
+        \right) \\
+&   + p_3 \erf \left( \frac{\mli{mad} + (\mli{med} - 7\mu_1)}
+        {b e^{7a\mu_1} \sqrt{2}}
+        \right)
+    + p_3 \erf \left( \frac{\mli{mad} - (\mli{med} - 7\mu_1)}
+        {b e^{7a\mu_1} \sqrt{2}}
+        \right)
+\end{split}
+\end{equation}
+
+This form uses the alternative point-slope mapping $\mu \mapsto \sigma$ from \ref{Morse Code Mean-Deviation Point-Slope Function} and is intended to be used with $F_{\mli{med}}$ from \ref{Morse Code Mixture Median Function Point-Slope}.
+%
+\begin{equation}\label{Morse Code Mixture MAD Function Point-Slope}
+\begin{split}
+F_{\mli{mad}}(\mu_1, a) = -1
+&   + p_1 \erf \left( \frac{\mli{mad} + (\mli{med} - \mu_1)}
+        {\sigma^{(1)} e^{a (\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right)
+    + p_1 \erf \left( \frac{\mli{mad} - (\mli{med} - \mu_1)}
+        {\sigma^{(1)} e^{a (\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right) \\
+&   + p_2 \erf \left( \frac{\mli{mad} + (\mli{med} - 3\mu_1)}
+        {\sigma^{(1)} e^{a (3\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right)
+    + p_2 \erf \left( \frac{\mli{mad} - (\mli{med} - 3\mu_1)}
+        {\sigma^{(1)} e^{a (3\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right) \\
+&   + p_3 \erf \left( \frac{\mli{mad} + (\mli{med} - 7\mu_1)}
+        {\sigma^{(1)} e^{a (7\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right)
+    + p_3 \erf \left( \frac{\mli{mad} - (\mli{med} - 7\mu_1)}
+        {\sigma^{(1)} e^{a (7\mu_1 - \mu^{(1)})} \sqrt{2}}
+        \right)
+\end{split}
+\end{equation}
+
+Together either form represents a system of two equations which can be solved numerically using Newton's method, though this requires an initial estimate. As before let the truncated samples $s^{(1)}, s^{(2)}, s^{(3)}$ represent the respective components $X_1, X_2, X_3$. Let $s^{(xy})$ represent the concatenation of samples $s^{(x)} \mdoubleplus s^{(y)}$. There are many methods to find an initial estimate,
+%
+\begin{equation}
+x^{(1)} = (\mu^{(1)}_1, a^{(1)}_{\vphantom{1}})
+\end{equation}
+%
+From $p^{(1)}$ we know $\mu^{(1)}_1 = \mu^{(1)}_{\vphantom{1}}$. The simplest method to find the slope $a^{(1)}$ is from two points, $p^{(1)}$ and a second point $p^{(2)}$ describing $s^{(2)}$. As in \ref{Morse Code Sample Point 1 Data} we can truncate a sample $s$ to a sample $s^{(2)}$ of $X_2$, then  use \ref{Morse Code Sample Point Estimation} to generate $p^{(2)} = (\mu^{(2)}, \sigma^{(2)})$.
+%
+\begin{equation}\label{Morse Code Sample Point 2 Data}
+\begin{split}
+i_1 &= \lceil p_1 |s| + 1\rceil \\
+i_2 &= \lceil (p_1 + p_2) |s| \rceil \\
+s^{(2)} &= \left[ s_{(i_1)},\ \ldots,\ s_{(i_2)} \right]
+\end{split}
+\end{equation}
+
+Rearranging either \ref{Morse Code Mean-Deviation Y-Intercept Function} or \ref{Morse Code Mean-Deviation Point-Slope Function} yields the slope.
+%
+\begin{equation}
+a = \frac{\ln\sigma - \ln\sigma^{(1)}}{\mu - \mu^{(1)}}
+\end{equation}
+
+Substituting the points yields the initial estimate.
+%
+\begin{equation}\label{Morse Code Sample Estimate}
+x^{(1)} = (\mu^{(1)}_1, a^{(1)}_{\vphantom{1}}) = \left(
+    \mu^{(1)},
+    \frac{\ln\sigma^{(2)} - \ln\sigma^{(1)}}{\mu^{(2)} - \mu^{(1)}}
+\right)a^{(1)}
+\end{equation}
+
+We could have also solved for $p^{(2)}$ using the variance of the normal mixture $s^{(12)}$ and its components. Substituting all known quantities into \ref{Mixture Variance Common} yields a relation of a single unknown. The same approach for $s^{(23)}$ yields a relation of two unknowns which can be further reduced by substituting the mapping $\mu \mapsto \sigma$ and solving directly for $a^{(1)}$. These methods are however sensitive to outliers.
+
+More interesting is to use the relation between the median of $s^{(12)}$ and its components given by \ref{Normal Mixture Median}. Rearranging for the standard deviation of a two-component mixture yields the following relation. Unfortunately the solution lies near a vertical asymptote, greatly magnifying the lack of accuracy in the sample. A similar approach is possible for $s^{(23)}$ after substituting the mapping $\mu \mapsto \sigma$ and solving directly for $a^{(1)}$; this too is equally inaccurate.
+%
+\begin{equation}\label{2nd Standard Deviation of Two-Component Normal Mixture}
+\sigma_2 = \cfrac
+    {\mli{med} - \mu_2}
+    {\erf^{-1} \left[
+        -\cfrac{p_1}{p_2} \erf \left(
+            \cfrac{\mli{med} - \mu_1}{\sigma_1\sqrt{2}}
+        \right)
+    \right] \sqrt{2}}
+\end{equation}
+
+It is also possible to repeat the current process and solve for $p^{(2)}$ using a system of equations describing the median (\ref{Normal Mixture Median}) and MAD (\ref{Normal Mixture MAD}) of the normal mixture $s^{(23)}$. As this first requires extracting $p^{(2)}$, solving this system would be redundant.
+
+Now that we have the initial estimate we can write the system of equations as a vector-valued function. Newton's method provides a numerical approximation to $g(\mu_1, a) = 0$.
+%
+\begin{equation}\label{Morse Code Mixture Vector Function}
+g(\mu_1, a) = \begin{bNiceMatrix}
+F_{\mli{med}}(\mu_1, a) \\
+F_{\mli{mad}}(\mu_1, a)
+\end{bNiceMatrix}
+\end{equation}
+
+The Jacobian matrix of $g$ at a point is given by the following function.
+%
+\begin{equation}\label{Morse Code Mixture Jacobian}
+J_g(\mu_1, a) = \begin{bNiceMatrix}
+\cfrac{dF_{\mli{med}}}{d\mu_1}(\mu_1, a) & \cfrac{dF_{\mli{med}}}{da}(\mu_1, a) \\
+\cfrac{dF_{\mli{mad}}}{d\mu_1}(\mu_1, a) & \cfrac{dF_{\mli{mad}}}{da}(\mu_1, a)
+\end{bNiceMatrix}
+\end{equation}
+
+The linear approximation of $g$ at a point $x^{(k)}$ is given by the following function.
+%
+\begin{equation}\label{Vector Function Linear Approximation}
+g_k(x) = g(x^{(k)}) + J_g(x^{(k)})(x - x^{(k)})
+\end{equation}
+
+We set the linear approximation to zero then substitute and solve for the next iterate $x^{(k+1)}$.
+%
+\begin{equation}\label{Vector Function Linear Approximation Iterate}
+\begin{split}
+0 &= g(x^{(k)}) + J_g(x^{(k)})(x^{(k+1)} - x^{(k)}) \\
+x^{(k+1)} &= x^{(k)} - [J_g(x^{(k)})]^{-1} g(x^{(k)})
+\end{split}
+\end{equation}
+
+Notice that the Jacobian is evaluated before inverting. Due to the inefficiency in inverting large matrices the linear approximation would typically be solved using Gaussian elimination. In this case the Jacobian is only a $2 \times 2$ matrix so we use the standard matrix inversion formula $AA^{-1} = I$ for $2 \times 2$ matrices.
+%
+\begin{equation}\label{2x2 Matrix}
+A = \begin{bNiceMatrix}
+a & b \\
+c & d
+\end{bNiceMatrix}
+\end{equation}
+
+The inverse of $A$ is therefore:
+%
+\begin{equation}\label{2x2 Matrix Inverse}
+\begin{split}
+A^{-1} &= \frac{1}{\det A}
+\begin{bNiceMatrix}[r]
+d & -b \\
+-c & a
+\end{bNiceMatrix}, \qquad \det A \neq 0 \\
+&= \frac{1}{ad - bc}
+\begin{bNiceMatrix}[r]
+d & -b \\
+-c & a
+\end{bNiceMatrix}, \qquad ad - bc \neq 0
+\end{split}
+\end{equation}
+
+The linear approximation is iterated until some criterion is met. If the output of the function falls to within some absolute distance threshold $\varepsilon_A$ of the solution, stop. If the input step size falls to some absolute distance threshold $\varepsilon_A$, stop. If the input step size falls to some distance threshold $\varepsilon_R$ relative to the previous step size, stop. If computational time is restricted, stop after a limited number of iterations. It is common to use some combination of these - and possible other - criteria.
+%
+\begin{align}\label{Newton's Method Stop Conditions}
+||g(x^{(k+1)})|| &\leq \varepsilon_A \\
+||x^{(k+1)} - x^{(k)}|| &\leq
+    \min(\varepsilon_A, \varepsilon_R ||x^{(k)} - x^{(k-1)}||) \\
+k + 1 &\geq K
+\end{align}
+
+
+Every solution point of the system represents a constraint between the median and MAD of the normal mixture and the mean and variance of each component. From any constraint the mean of each component can be derived using \ref{Morse Code Mean Component Functions} then the standard deviation using either \ref{Morse Code Mean-Deviation Y-Intercept Function} or \ref{Morse Code Mean-Deviation Point-Slope Function}. In case of multiple solutions, select the solution which best represents the constraint between the mean and variance of the mixture and each component using \ref{Mixture Mean} and \ref{Mixture Variance Common}. While the numerical solution demonstrated is generally applicable, the constraints on Morse code allow the initial estimate to be unusually precise. Depending on the level of precision a solution to the system may not be necessary.
+
+This model of Morse code is limited by its constraints. The further a sample deviates from expected Morse input, the more inaccurate the solution becomes. For an adaptive solution consider instead using an expectation-maximization algorithm.
+
+
+\printbibliography
+
+\end{document}
